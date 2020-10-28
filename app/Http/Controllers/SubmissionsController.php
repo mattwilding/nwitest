@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Throwable;
 
 use App\Models\Submission;
+use App\Mail\ContactSubmitted;
+use Illuminate\Support\Facades\Mail;
 
 class SubmissionsController extends Controller
 {
@@ -38,8 +40,10 @@ class SubmissionsController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
-        $s = new Submission($request->all());
+        $s = new Submission();
+        $s->name = strip_tags($request->name);
+        $s->email_address = $request->email_address;
+        $s->message = strip_tags($request->message);
         $s->save();
         return response()->json(['result' => 'success']);
     }
@@ -52,6 +56,10 @@ class SubmissionsController extends Controller
      */
     public function show($id)
     {
+        if($id == 'last'){
+            $s = Submission::latest()->first();
+            return response()->json($s);
+        }
         if(!$s = Submission::find($id)){
             return response()->json(['message' => 'not found!'], 404);
         }
@@ -80,12 +88,12 @@ class SubmissionsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //dd($request->all());
         if(!$s = Submission::find($id)){
             return response()->json(['message' => 'not found!'], 404);
         }
         $s->fill($request->all());
         $s->save();
+        Mail::to('mattjwilding@gmail.com')->send(new ContactSubmitted($s));
         return response()->json($s);
 
     }

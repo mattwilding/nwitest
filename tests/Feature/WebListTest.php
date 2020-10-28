@@ -43,16 +43,11 @@ class WebListTest extends TestCase
 
     public function testFormSubmission()
     {
-        $submissionCount = Submission::count();
-
         $submission = SubmissionFactory::new()->make();
-
-        $submission['email_address'] = '';
-
         $submissionArray = $submission->toArray();
 
-        // $submissionArray['_token'] = csrf_token();
-        // $submissionArray['_method'] = 'POST';
+        $submissionArray['_token'] = csrf_token();
+        $submissionArray['_method'] = 'POST';
 
         $response = $this->followingRedirects()->post('/contact-submit', $submissionArray)->assertSee('All contacts');
     }
