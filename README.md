@@ -6,3 +6,5 @@ API routes tested using Postman (or similar) to post requests - all responses as
 
 Web routes interact with same model
 
+phpunit tests added for both API and web routes 
+
